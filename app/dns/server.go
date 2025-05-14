@@ -52,7 +52,14 @@ func (s *DnsServer) handleConnection() error {
 	request.Unmarshall(buf[:size])
 	fmt.Printf("Received message: %#v\n", request)
 
-	responseData := []byte{}
+	// Create a response
+	response := NewMessage()
+	response.Header.ID = 1234
+	response.Header.Flags.SetQR(true)
+	responseData := response.Marshall()
+	fmt.Printf("Response message: %#v\n", response)
+	fmt.Printf("Send response: %s\n", string(responseData))
+
 	_, err = s.listener.WriteToUDP(responseData, source)
 	if err != nil {
 		fmt.Println("Failed to send response:", err)
